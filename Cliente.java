@@ -14,22 +14,22 @@ class Cliente {
       try
       {
          String IPServ = "127.0.0.1";
-         int PortaServ = 2000;
+         int PortaServ = 1000;
             
-         System.out.println(" -C- Conectando ao servidor ->" + IPServidor + ":" +PortaServidor);
-         Socket socktCli = new Socket (IPServidor,PortaServidor);
-         System.out.println(" -C- Detalhes conexao :" + socktCli.toString()); //DETALHAMENTO (EXTRA)
+         System.out.println(" -C- Conectando ao servidor ->" +  IPServ + ":" +PortaServ);
+         Socket socktCli = new Socket ( IPServ,PortaServ);
+        /* System.out.println(" -C- Detalhes conexao :" + socktCli.toString()); //DETALHAMENTO (EXTRA)
             
-         //CRIA UM PACOTE DE SA�DA PARA ENVIAR MENSAGENS, ASSOCIANDO-O � CONEX�O (c)
+         //CRIA UM PACOTE DE SA DA PARA ENVIAR MENSAGENS, ASSOCIANDO-O   CONEX O (c)
          ObjectOutputStream sCliOut = new ObjectOutputStream(socktCli.getOutputStream());
          sCliOut.writeObject("MENSAGEM TESTE");//ESCREVE NO PACOTE
          System.out.println(" -C- Enviando mensagem...");
          sCliOut.flush(); //ENVIA O PACOTE
 
-         //CRIA UM PACOTE DE ENTRADA PARA RECEBER MENSAGENS, ASSOCIADO � CONEX�O (c)
+         //CRIA UM PACOTE DE ENTRADA PARA RECEBER MENSAGENS, ASSOCIADO   CONEX O (c)
          ObjectInputStream sCliIn = new ObjectInputStream (socktCli.getInputStream());
          System.out.println(" -C- Recebendo mensagem...");
-         String strMsg = sCliIn.readObject().toString(); 
+         String strMsg = sCliIn.readObject().toString(); */
 
          socktCli.close();
          System.out.println(" -C- Conexao finalizada...");
