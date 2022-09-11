@@ -2,7 +2,7 @@
  * Ciência da Computação - PUC Minas
  * Professor: Marco Antonio da Silva Barbosa
  * Dupla: 
- *   Ana Laura Fernandes de Oliveira - XXXXXX
+ *   Ana Laura Fernandes de Oliveira - 680715
  *   Larissa Domingues Gomes         - 650525
  */
 import java.net.Socket;
