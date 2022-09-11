@@ -8,6 +8,7 @@
 import java.net.Socket;
 import java.net.ServerSocket;
 import java.io.*;
+import java.util.Scanner;
 
 public class Servidor extends Thread 
 {
@@ -33,11 +34,11 @@ public class Servidor extends Thread
 	// Método para inicializar servidor
 	static void init() throws Exception{
 		// Inicializando Sevidor
-		System.out.println("Connectando... ");
+		System.out.println("Conectando... ");
 		socktServ = new ServerSocket(PortaServidor);
 	}
 
-		/* Método para inicializar conexões de clientes
+	/* Método para inicializar conexões de clientes
 	 *
 	 */
 	static void initConexoes()throws Exception {
@@ -65,6 +66,8 @@ public class Servidor extends Thread
 
 		try{
 			System.out.println(" -S- Recebendo mensagem..." + c);
+			System.out.println(" -S- Cliente " + c + " na fila para adquirir ingresso:");
+			menu();
 			//CRIA UM PACOTE DE ENTRADA PARA RECEBER MENSAGENS, ASSOCIADO � CONEX�O (p)
 			/*ObjectInputStream sServIn = new ObjectInputStream(getInputStream());
 			System.out.println(" -S- Recebendo mensagem...");
@@ -84,5 +87,83 @@ public class Servidor extends Thread
 		} catch(Exception e){
 
 		}
+	}
+
+	public void menu() {
+		Scanner in = new Scanner(System.in);
+		int opcao;
+
+		System.out.println("--------- Menu ---------");
+		System.out.println("1) Cadastrar");
+		System.out.println("2) Comprar ingressos");
+		System.out.println("3) Listar ingressos comprados");
+		System.out.println("0) Sair");
+		System.out.println("-----------------------------------");
+		System.out.println("Digite o codigo da acao que voce deseja:");
+
+		opcao = in.nextInt();
+
+		do {
+			System.out.println("--------- Menu ---------");
+			System.out.println("1) Cadastrar");
+			System.out.println("2) Comprar ingressos");
+			System.out.println("3) Listar ingressos comprados");
+			System.out.println("0) Sair");
+			System.out.println("-----------------------------------");
+			System.out.println("Digite o codigo da acao que voce deseja:");
+
+			opcao = in.nextInt();
+
+			switch(opcao) {
+				case 1:
+					cadastrar();
+					break;
+				case 2:
+					menuDeCompras();
+					break;
+				case 3:
+					listarIngressos();
+					break;
+				default:
+					System.out.println("Codigo nao encontrado! Tente novamente.");
+			}
+		} while(opcao != 0);
+	}
+
+	public void cadastrar() {
+
+	}
+
+	public void menuDeCompras() {
+		Scanner in = new Scanner(System.in);
+		int ingressoId;
+
+		System.out.println("--------- Menu de compra ---------");
+		System.out.println("1) Coldplay");
+		System.out.println("2) Taylor Swift");
+		System.out.println("3) Harry Styles");
+		System.out.println("-----------------------------------");
+		System.out.println("Digite o codigo do show que voce deseja comprar o ingresso:");
+		
+		ingressoId = in.nextInt();
+
+		System.out.println("Ingresso adquirido pelo cliente " + c + ":");
+		switch(ingressoId) {
+			case 1:
+				System.out.println("Coldplay");
+				break;
+			case 2:
+				System.out.println("Taylor Swift");
+				break;
+			case 3:
+				System.out.println("Harry Styles");
+				break;
+			default:
+				System.out.println("Codigo do show nao encontrado! Tente novamente.");
+		}
+	}
+
+	public void listarIngressos() {
+
 	}
 }

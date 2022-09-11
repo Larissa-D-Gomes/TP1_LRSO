@@ -16,7 +16,7 @@ class Cliente {
          String IPServ = "127.0.0.1";
          int PortaServ = 1000;
             
-         System.out.println(" -C- Conectando ao servidor ->" +  IPServ + ":" +PortaServ);
+         System.out.println(" -C- Conectando ao servidor ->" +  IPServ + ":" + PortaServ);
          Socket socktCli = new Socket ( IPServ,PortaServ);
         /* System.out.println(" -C- Detalhes conexao :" + socktCli.toString()); //DETALHAMENTO (EXTRA)
             
@@ -31,8 +31,8 @@ class Cliente {
          System.out.println(" -C- Recebendo mensagem...");
          String strMsg = sCliIn.readObject().toString(); */
 
-         socktCli.close();
-         System.out.println(" -C- Conexao finalizada...");
+         // socktCli.close();
+         // System.out.println(" -C- Conexao finalizada...");
       }
       catch(Exception e) // Tratamento de erro
       {
