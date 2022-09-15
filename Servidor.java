@@ -64,13 +64,20 @@ public class Servidor extends Thread
 	int clientTicketsColdplay = 0;
 	int clientTicketsTaylor = 0;
 	int clientTicketsHarry = 0;
+	ObjectInputStream reader;   
+	ObjectOutputStream writer;
 
 	Socket conSer;
 
 	// Constructor
-  	public Servidor(Socket conSer){
-    	this.clientId = cg++;
+  	public Servidor(Socket conSer) throws Exception {
+    	this.clientId = ++cg;
     	this.conSer = conSer;
+		this.reader = new ObjectInputStream(conSer.getInputStream());
+		this.writer = new ObjectOutputStream(this.conSer.getOutputStream());
+
+		// Receber confirmação de conexão do cliente
+		reader.readObject(); 
  	}
 
 	public void run(){
@@ -78,22 +85,9 @@ public class Servidor extends Thread
 		try{
 			System.out.println(" -S- Recebendo mensagem..." + clientId);
 			System.out.println(" -S- Cliente " + clientId + " na fila para adquirir ingresso:");
-			//criar zona crítica?
+
 			menu();
-			//CRIA UM PACOTE DE ENTRADA PARA RECEBER MENSAGENS, ASSOCIADO � CONEX�O (p)
-			/*ObjectInputStream sServIn = new ObjectInputStream(getInputStream());
-			System.out.println(" -S- Recebendo mensagem...");
-			Object msgIn = sServIn.readObject(); //ESPERA (BLOQUEADO) POR UM PACOTE
-			System.out.println(" -S- Recebido: " + msgIn.toString());
-					
-			//CRIA UM PACOTE DE SA�DA PARA ENVIAR MENSAGENS, ASSOCIANDO-O � CONEX�O (p)
-			ObjectOutputStream sSerOut = new ObjectOutputStream(getOutputStream());
-			sSerOut.writeObject("RETORNO " + msgIn.toString() + " - TCP"); //ESCREVE NO PACOTE
-			System.out.println(" -S- Enviando mensagem resposta...");
-			sSerOut.flush(); //ENVIA O PACOTE*/
-				
-			//FINALIZA A CONEX�O
-			//socktServ.close();
+
 			conSer.close();
 			System.out.println(" -S- Conexao finalizada...");
 		} catch(Exception e){
@@ -101,30 +95,27 @@ public class Servidor extends Thread
 		}
 	}
 
-	public void menu() {
-		Scanner in = new Scanner(System.in);
+	public void menu() throws Exception{
 		int opcao;
 
-		System.out.println("--------- Menu ---------");
-		System.out.println("1) Cadastrar");
-		System.out.println("2) Comprar ingressos");
-		System.out.println("3) Listar ingressos comprados");
-		System.out.println("0) Sair");
-		System.out.println("-----------------------------------");
-		System.out.println("Digite o codigo da acao que voce deseja:");
+		String menu = "--------- Menu ---------\n" +
+					  "1) Cadastrar\n" +
+					  "2) Comprar ingressos\n" +
+					  "3) Listar ingressos comprados\n" +
+					  "0) Sair\n" +
+					  "-----------------------------------\n" +
+					  "Digite o codigo da acao que voce deseja: ";
 
-		opcao = in.nextInt();
+		// Enviando menu para cliente
+		writer.flush();
 
 		do {
-			System.out.println("--------- Menu ---------");
-			System.out.println("1) Cadastrar");
-			System.out.println("2) Comprar ingressos");
-			System.out.println("3) Listar ingressos comprados");
-			System.out.println("0) Sair");
-			System.out.println("-----------------------------------");
-			System.out.println("Digite o codigo da acao que voce deseja:");
+			// Escrevendo Menu
+			this.writer.writeObject(menu);
 
-			opcao = in.nextInt();
+			// Aguardando resposta de usuário
+			String opInt = reader.readObject().toString(); 
+			opcao = Integer.parseInt(opInt);
 
 			switch(opcao) {
 				case 1:
@@ -142,19 +133,19 @@ public class Servidor extends Thread
 		} while(opcao != 0);
 	}
 
-	public void cadastrar() {
-		Scanner in = new Scanner(System.in);
-		System.out.println("Digite o seu nome:");
-		clientName = in.nextLine();
-		System.out.println("Digite o seu CPF ou RG:");
-		clientDocument = in.nextLine();
-		System.out.println("Digite o seu email:");
-		clientEmail = in.nextLine();
+	public void cadastrar() throws Exception{
+		this.writer.writeObject("Digite o seu nome:");
+		clientName = reader.readObject().toString();
+		this.writer.writeObject("Digite o seu CPF ou RG:");
+		clientDocument = reader.readObject().toString();
+		this.writer.writeObject("Digite o seu email:");
+		clientEmail = reader.readObject().toString();
 
-		System.out.println("Cadastro finalizado!");
-		System.out.println("Nome: " + clientName);
-		System.out.println("Documento: " + clientDocument);
-		System.out.println("E-mail: " + clientEmail);
+		String successMessage = "Cadastro finalizado! \n " +
+								"\nNome: " + clientName + 
+								"\nDocumento: " + clientDocument +
+								"\nE-mail: " + clientEmail;
+		this.writer.writeObject(successMessage);
 
 	}
 
