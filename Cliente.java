@@ -15,43 +15,37 @@ class Cliente {
       try
       {
          String IPServ = "127.0.0.1";
-         int PortaServ = 1000;
+         int portServ = 1000;
             
-         Socket socktCli = new Socket ( IPServ,PortaServ);
+         Socket socktCli = new Socket (IPServ, portServ);
 
-         // Reader
-         ObjectOutputStream sCliOut = new ObjectOutputStream(socktCli.getOutputStream());
-         sCliOut.writeObject("Cliente Conectado!");//ESCREVE NO PACOTE
-			sCliOut.flush(); //ENVIA O PACOTE
+          // Inicializando writer
+         ObjectOutputStream writer = new ObjectOutputStream(socktCli.getOutputStream());
+         // Enviando pacote de conexão
+         writer.writeObject("Cliente Conectado!");
+			writer.flush(); 
 
+         // Inicializando reader
          ObjectInputStream reader = new ObjectInputStream (socktCli.getInputStream());
          Scanner in = new Scanner(System.in);
 
-         boolean cont = true;
-
-         while(cont) {
+         while(true) {
+            // Recebendo mensagem do servidor
             String msg = reader.readObject().toString();
+
+            // Finalizar conexão ao receber flag para encerrar
+            if(msg.equals("END CONNECTION")){
+               break;
+            }
             System.out.println(msg);
-
+            // Respondendo mensagem ao servidor
             String clientIn = in.nextLine();
-            sCliOut.writeObject(clientIn);
+            writer.writeObject(clientIn);
          }
-        
-         /*System.out.println(" -C- Detalhes conexao :" + socktCli.toString()); //DETALHAMENTO (EXTRA)
-            
-         //CRIA UM PACOTE DE SA DA PARA ENVIAR MENSAGENS, ASSOCIANDO-O   CONEX O (c)
-         ObjectOutputStream sCliOut = new ObjectOutputStream(socktCli.getOutputStream());
-         sCliOut.writeObject("MENSAGEM TESTE");//ESCREVE NO PACOTE
-         System.out.println(" -C- Enviando mensagem...");
-         sCliOut.flush(); //ENVIA O PACOTE
 
-         //CRIA UM PACOTE DE ENTRADA PARA RECEBER MENSAGENS, ASSOCIADO   CONEX O (c)
-         ObjectInputStream sCliIn = new ObjectInputStream (socktCli.getInputStream());
-         System.out.println(" -C- Recebendo mensagem...");
-         String strMsg = sCliIn.readObject().toString(); */
-
+         // Finalizando conexão do cliente no servidor
          socktCli.close();
-         System.out.println(" -C- Conexao finalizada...");
+         System.out.println("Conexão finalizada.");
       }
       catch(Exception e) // Tratamento de erro
       {
