@@ -106,15 +106,14 @@ public class Servidor extends Thread
 					  "-----------------------------------\n" +
 					  "Digite o codigo da acao que voce deseja: ";
 
-		// Enviando menu para cliente
-		writer.flush();
-
 		do {
 			// Escrevendo Menu
+			writer.flush();
 			this.writer.writeObject(menu);
 
 			// Aguardando resposta de usuário
 			String opInt = reader.readObject().toString(); 
+			System.out.println("Op: " + opInt);
 			opcao = Integer.parseInt(opInt);
 
 			switch(opcao) {
@@ -130,6 +129,7 @@ public class Servidor extends Thread
 				default:
 					System.out.println("Codigo nao encontrado! Tente novamente.");
 			}
+			reader.readObject().toString();
 		} while(opcao != 0);
 	}
 
@@ -144,7 +144,9 @@ public class Servidor extends Thread
 		String successMessage = "Cadastro finalizado! \n " +
 								"\nNome: " + clientName + 
 								"\nDocumento: " + clientDocument +
-								"\nE-mail: " + clientEmail;
+								"\nE-mail: " + clientEmail +
+								"\nAperte enter para continuar...";
+
 		this.writer.writeObject(successMessage);
 
 	}
@@ -186,14 +188,34 @@ public class Servidor extends Thread
 		}
 	}
 
-	public void listarIngressos() {
-		if(clientTicketsColdplay != 0)
-			System.out.println("Ingressos Coldplay: " + clientTicketsColdplay);
+	public void listarIngressos() throws Exception{
+		System.out.println("listar");
+		if(this.clientName.equals("")) {
+			this.writer.writeObject("Faça o cadastro primeiro.");
+			writer.flush();
+			return;
+		}
 
-		if(clientTicketsHarry != 0)
-			System.out.println("Ingressos Harry Styles: " + clientTicketsColdplay);
+		String total = "";
 
-		if(clientTicketsTaylor != 0)
-			System.out.println("Ingressos Taylor Swift: " + clientTicketsColdplay);
+		if(this.clientTicketsColdplay != 0) {
+			total += "\nIngressos Coldplay: " + clientTicketsColdplay;
+		}
+
+		if(this.clientTicketsHarry != 0) {
+			total += "\nIngressos Harry Styles: " + clientTicketsColdplay;
+			writer.flush();
+		}
+
+		if(this.clientTicketsTaylor != 0) {
+			total += "\nIngressos Taylor Swift: " + clientTicketsColdplay;	
+		}
+
+		if(total.equals("")) {
+			total += "Você não tem nenhum ingresso. :(";
+		}
+
+		total += "\nAperte enter para continuar...";
+		this.writer.writeObject(total);
 	}
 }
