@@ -116,12 +116,13 @@ public class Servidor extends Thread
 			// Aguardando resposta de usuário
 			String opInt = reader.readObject().toString(); 
 			opcao = Integer.parseInt(opInt);
-
+			System.out.println("OPÇÃO: " + opcao);
 			switch(opcao) {
 				case 1:
 					cadastrar();
 					break;
 				case 2:
+					System.out.println("switch: " + opcao);
 					menuDeCompras();
 					break;
 				case 3:
@@ -145,45 +146,53 @@ public class Servidor extends Thread
 								"\nNome: " + clientName + 
 								"\nDocumento: " + clientDocument +
 								"\nE-mail: " + clientEmail;
+
 		this.writer.writeObject(successMessage);
 
 	}
 
-	public void menuDeCompras() {
-		Scanner in = new Scanner(System.in);
-		int ingressoId;
+	public void menuDeCompras() throws Exception{
+		System.out.println("ENTREI");
+		String ticketsMenu = "--------- Menu de compra ---------\n" + "1) Coldplay \n" + "2) Taylor Swift \n" + "3) Harry Styles \n" + "----------------------------------- \n" + "Digite o codigo do show que voce deseja comprar o ingresso: \n";
+		// Enviando menu para cliente
+		this.writer.writeObject(ticketsMenu);
 
-		System.out.println("--------- Menu de compra ---------");
-		System.out.println("1) Coldplay");
-		System.out.println("2) Taylor Swift");
-		System.out.println("3) Harry Styles");
-		System.out.println("-----------------------------------");
-		System.out.println("Digite o codigo do show que voce deseja comprar o ingresso:");
+		// Aguardando resposta de usuário
+		String ticketInt = reader.readObject().toString(); 
+		int ticketId = Integer.parseInt(ticketInt);
 		
-		ingressoId = in.nextInt();
+		this.writer.writeObject("\nDigite quantos ingressos voce deseja comprar:");
+		String qt = reader.readObject().toString();
+		int quantidade = Integer.parseInt(qt);
 		
-		System.out.println("Digite quantos ingressos voce deseja comprar:");
-		int quantidade;
-		quantidade = in.nextInt();
+		String response = "\n" +quantidade + "Ingresso(s) adquirido(s) pelo cliente " + clientId + " do show:\n";
 		
-		System.out.println(quantidade + "Ingresso(s) adquirido(s) pelo cliente " + clientId + " do show:");
-		
-		switch(ingressoId) {
+		// Enviando menu para cliente
+		//writer.flush();
+
+		switch(ticketId) {
 			case 1:
 				clientTicketsColdplay += quantidade;
-				System.out.println("Coldplay");
+				this.writer.writeObject(response + "Coldplay");
+
 				break;
 			case 2:
 				clientTicketsTaylor += quantidade;
-				System.out.println("Taylor Swift");
+				this.writer.writeObject(response + "Taylor Swift");
+
 				break;
 			case 3:
 				clientTicketsHarry += quantidade;
-				System.out.println("Harry Styles");
+				this.writer.writeObject(response + "Harry Styles");				
+
 				break;
 			default:
-				System.out.println("Codigo do show nao encontrado! Tente novamente.");
+				this.writer.writeObject("Codigo do show nao encontrado! Tente novamente.");
+				// Enviando resposta para cliente
+				writer.flush();
 		}
+
+
 	}
 
 	public void listarIngressos() {
