@@ -113,7 +113,6 @@ public class Servidor extends Thread
 
 			// Aguardando resposta de usuário
 			String opInt = reader.readObject().toString(); 
-			System.out.println("Op: " + opInt);
 			opcao = Integer.parseInt(opInt);
 
 			switch(opcao) {
@@ -121,6 +120,7 @@ public class Servidor extends Thread
 					cadastrar();
 					break;
 				case 2:
+					System.out.println("switch: " + opcao);
 					menuDeCompras();
 					break;
 				case 3:
@@ -151,45 +151,60 @@ public class Servidor extends Thread
 
 	}
 
-	public void menuDeCompras() {
-		Scanner in = new Scanner(System.in);
-		int ingressoId;
+	public void menuDeCompras() throws Exception{
+		if(this.clientName.equals("")) {
+			this.writer.writeObject("Faça o cadastro primeiro.");
+			writer.flush();
+			return;
+		}
+		String ticketsMenu = "--------- Menu de compra ---------\n" + "1) Coldplay \n" + "2) Taylor Swift \n" + "3) Harry Styles \n" + "----------------------------------- \n" + "Digite o codigo do show que voce deseja comprar o ingresso: ";
+		// Enviando menu para cliente
+		this.writer.writeObject(ticketsMenu);
 
-		System.out.println("--------- Menu de compra ---------");
-		System.out.println("1) Coldplay");
-		System.out.println("2) Taylor Swift");
-		System.out.println("3) Harry Styles");
-		System.out.println("-----------------------------------");
-		System.out.println("Digite o codigo do show que voce deseja comprar o ingresso:");
+		// Aguardando resposta de usuário
+		String ticketInt = reader.readObject().toString(); 
+		int ticketId = Integer.parseInt(ticketInt);
 		
-		ingressoId = in.nextInt();
+		this.writer.writeObject("\nDigite quantos ingressos voce deseja comprar:");
+		String qt = reader.readObject().toString();
+		int quantidade = Integer.parseInt(qt);
 		
-		System.out.println("Digite quantos ingressos voce deseja comprar:");
-		int quantidade;
-		quantidade = in.nextInt();
+		String response = updateTicketQty(ticketId, quantidade);
+
+		if(!response.equals("OK")){
+			response += "\nAperte enter para continuar...";
+			this.writer.writeObject(response);
+			return;
+		}
+
+		response = "\n" + quantidade + " Ingresso(s) adquirido(s) pelo cliente " + clientId + " do show:\n";
 		
-		System.out.println(quantidade + "Ingresso(s) adquirido(s) pelo cliente " + clientId + " do show:");
-		
-		switch(ingressoId) {
+		switch(ticketId) {
 			case 1:
 				clientTicketsColdplay += quantidade;
-				System.out.println("Coldplay");
+				response = response + "Coldplay";
+
 				break;
 			case 2:
 				clientTicketsTaylor += quantidade;
-				System.out.println("Taylor Swift");
+				response = response + "Taylor Swift";
+
 				break;
 			case 3:
 				clientTicketsHarry += quantidade;
-				System.out.println("Harry Styles");
+				response = response + "Harry Styles";				
+
 				break;
 			default:
-				System.out.println("Codigo do show nao encontrado! Tente novamente.");
+				response = "Codigo do show nao encontrado! Tente novamente.";
+				
 		}
+		response += "\nAperte enter para continuar...";
+		this.writer.writeObject(response);
+
 	}
 
 	public void listarIngressos() throws Exception{
-		System.out.println("listar");
 		if(this.clientName.equals("")) {
 			this.writer.writeObject("Faça o cadastro primeiro.");
 			writer.flush();
@@ -203,12 +218,12 @@ public class Servidor extends Thread
 		}
 
 		if(this.clientTicketsHarry != 0) {
-			total += "\nIngressos Harry Styles: " + clientTicketsColdplay;
+			total += "\nIngressos Harry Styles: " + clientTicketsHarry;
 			writer.flush();
 		}
 
 		if(this.clientTicketsTaylor != 0) {
-			total += "\nIngressos Taylor Swift: " + clientTicketsColdplay;	
+			total += "\nIngressos Taylor Swift: " + clientTicketsTaylor;	
 		}
 
 		if(total.equals("")) {
@@ -217,5 +232,31 @@ public class Servidor extends Thread
 
 		total += "\nAperte enter para continuar...";
 		this.writer.writeObject(total);
+	}
+
+	synchronized String updateTicketQty(int ticketId, int qty) {
+
+		switch(ticketId) {
+			case 1:
+				if(qty > ticketsColdplay) 
+					return "Não há ingressos suficientes...";
+
+				ticketsColdplay--;
+				break;
+			case 2:
+				if(qty > ticketsTaylor) 
+					return "Não há ingressos suficientes...";
+
+				ticketsTaylor--;
+				break;
+			case 3:
+				if(qty > ticketsHarry) 
+					return "Não há ingressos suficientes...";
+
+				ticketsHarry--;		
+
+				break;
+		}
+		return "OK";
 	}
 }
